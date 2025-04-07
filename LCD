@@ -83,6 +83,18 @@ def lcd_update():
         lcd.crlf()
         lcd.write_string(modes[current_mode].ljust(16))
 
+def step_motor(steps, direction=1, delay=0.005):
+    # direction = 1 for forward, -1 for backward
+    if direction == 1:
+        DIR_PIN.on()
+    else:
+        DIR_PIN.off()
+    
+    for _ in range(abs(steps)):
+        STEP_PIN.on()
+        time.sleep(delay)
+        STEP_PIN.off()
+        time.sleep(delay)
 # --------- Sorting Functions ---------
 
 def sort_by_value():
@@ -134,7 +146,9 @@ def sort_by_value():
 
         if value in coin_position_steps:
             steps = coin_position_steps[value]
-            step_motor(steps)
+            step_motor(steps, direction=1)  # Move to sorting location
+            sleep(1)  # Short pause for sorting
+            step_motor(steps, direction=-1)  # Move back to starting position
 
         sleep(3)
         lcd_update()
